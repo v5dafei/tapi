@@ -1292,9 +1292,6 @@ class Player extends Auth implements JWTSubject
                     case 'fish_gift':
                         $limit_type = 5;  //活动理赔
                         break;
-                    case 'agent_support':
-                        $limit_type = 52;  //代理扶持
-                        break;
                     default:
                             # code...
                         break;
@@ -2829,7 +2826,7 @@ class Player extends Auth implements JWTSubject
 
                                 \DB::commit();
                                 Lock::release($redisLock);
-                                return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
+                                return config('language')[$language]['error537'].config('language')[$language]['text71'];
                             }
                         }
                     } catch (\Exception $e) {
@@ -3076,7 +3073,6 @@ class Player extends Auth implements JWTSubject
         $withdrawalNeedSms             = CarrierCache::getCarrierMultipleConfigure($this->carrier_id, 'withdrawal_need_sms',$this->prefix);
         $enableSafeBox                 = CarrierCache::getCarrierMultipleConfigure($this->carrier_id, 'enable_safe_box',$this->prefix);
         $materialIds                   = CarrierCache::getCarrierMultipleConfigure($this->carrier_id, 'materialIds',$this->prefix);
-        $agentSupportWithdrawAmount    = CarrierCache::getCarrierMultipleConfigure($this->carrier_id, 'agent_support_withdraw_amount',$this->prefix);
         $enableVoucherRecharge         = CarrierCache::getCarrierMultipleConfigure($this->carrier_id, 'enable_voucher_recharge',$this->prefix);
         $voucherNeedRechargeAmount     = CarrierCache::getCarrierMultipleConfigure($this->carrier_id, 'voucher_need_recharge_amount',$this->prefix);
         $language                      = CarrierCache::getLanguageByPrefix($this->prefix);
@@ -3239,7 +3235,7 @@ class Player extends Auth implements JWTSubject
 
                                 \DB::commit();
                                 Lock::release($redisLock);
-                                return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
+                                return config('language')[$language]['error537'].config('language')[$language]['text71'];
                             }
                         }
                     } catch (\Exception $e) {
@@ -3288,113 +3284,6 @@ class Player extends Auth implements JWTSubject
             $existPlayerWithdraw = PlayerWithdraw::where('carrier_id',$this->carrier_id)->where('player_id',$this->player_id)->whereIn('status',[0,-1,4,5,6])->first();
             if($existPlayerWithdraw){
                 return config('language')[$language]['error532'];
-            }
-        }
-
-        //是否代理扶持且未充值
-        $existAgentSupport = PlayerTransfer::where('player_id',$this->player_id)->where('type','agent_support')->orderBy('id','desc')->first();
-        if($existAgentSupport){
-            $existAmountIncrease = PlayerTransfer::where('player_id',$this->player_id)->whereIn('type',['recharge','dividend_from_parent','commission_from_child'])->orderBy('id','desc')->first();
-            //提现金额少于代理扶持最低出款金额
-            if($agentSupportWithdrawAmount > $amount){
-                return config('language')[$language]['error535'].$agentSupportWithdrawAmount;
-            }
-
-            //扣除多余出来的金额
-            if(!$existAmountIncrease && $amount > $agentSupportWithdrawAmount){
-                $cacheKey              = "player_" .$this->player_id;
-                $redisLock             = Lock::addLock($cacheKey,60);
-                $diff                  = $amount - $agentSupportWithdrawAmount;
-
-                if (!$redisLock) {
-                    return config('language')[$language]['error20'];
-                } else {
-                    try {
-                        \DB::beginTransaction();
-
-                        $playerAccount                          = PlayerAccount::where('player_id',$this->player_id)->lockForUpdate()->first();
-                        if($enableSafeBox){
-                            if($playerAccount->agentbalance < $diff*10000){
-                                Lock::release($redisLock);
-                                return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
-                            } elseif($playerAccount->agentbalance - $diff*10000 < $agentSupportWithdrawAmount*10000){
-                                Lock::release($redisLock);
-                                return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
-                            }
-                        } else{
-                            if($playerAccount->balance < $diff*10000){
-                                Lock::release($redisLock);
-                                return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
-                            }  elseif($playerAccount->balance - $diff*10000 < $agentSupportWithdrawAmount*10000){
-                                Lock::release($redisLock);
-                                return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
-                            }
-                        }
-
-                        $playerTransfer                         = new PlayerTransfer();
-                        $playerTransfer->prefix                 = $this->prefix;
-                        $playerTransfer->carrier_id             = $this->carrier_id;
-                        $playerTransfer->rid                    = $this->rid;
-                        $playerTransfer->top_id                 = $this->top_id;
-                        $playerTransfer->parent_id              = $this->parent_id;
-                        $playerTransfer->player_id              = $this->player_id;
-                        $playerTransfer->is_tester              = $this->is_tester;
-                        $playerTransfer->user_name              = $this->user_name;
-                        $playerTransfer->level                  = $this->level;
-                        $playerTransfer->mode                   = 2;
-                        $playerTransfer->type                   = 'gift_transfer_reduce';
-                        $playerTransfer->type_name              = config('language')[$language]['text59'];
-                        $playerTransfer->day_m                  = date('Ym');
-                        $playerTransfer->day                    = date('Ymd');
-                        $playerTransfer->amount                 = $diff*10000;
-                        $playerTransfer->admin_id               = 0;
-                        $playerTransfer->remark                 = config('language')[$language]['text70'];
-
-                        if($enableSafeBox){
-                            $playerTransfer->before_balance                  = $playerAccount->balance;
-                            $playerTransfer->balance                         = $playerAccount->balance;
-                            $playerTransfer->before_frozen_balance           = $playerAccount->frozen;
-                            $playerTransfer->frozen_balance                  = $playerAccount->frozen;
-                            $playerTransfer->before_agent_balance            = $playerAccount->agentbalance;
-                            $playerTransfer->agent_balance                   = $playerAccount->agentbalance - $playerTransfer->amount;
-                            $playerTransfer->before_agent_frozen_balance     = $playerAccount->agentfrozen;
-                            $playerTransfer->agent_frozen_balance            = $playerAccount->agentfrozen;
-
-                            $playerAccount->agentbalance                     = $playerTransfer->agent_balance;
-                            $playerAccount->agentfrozen                      = $playerTransfer->agent_frozen_balance;
-
-                        } else{
-                            $playerTransfer->before_balance                  = $playerAccount->balance;
-                            $playerTransfer->balance                         = $playerAccount->balance- $playerTransfer->amount;
-                            $playerTransfer->before_frozen_balance           = $playerAccount->frozen;
-                            $playerTransfer->frozen_balance                  = $playerAccount->frozen;
-                            $playerTransfer->before_agent_balance            = $playerAccount->agentbalance;
-                            $playerTransfer->agent_balance                   = $playerAccount->agentbalance;
-                            $playerTransfer->before_agent_frozen_balance     = $playerAccount->agentfrozen;
-                            $playerTransfer->agent_frozen_balance            = $playerAccount->agentfrozen;
-
-                            $playerAccount->balance                          = $playerTransfer->balance;
-                            $playerAccount->frozen                           = $playerTransfer->frozen_balance;
-                        }
-
-                        $playerTransfer->save();
-                        $playerAccount->save();
-
-                        \DB::commit();
-                        Lock::release($redisLock);
-
-                        return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
-                    } catch (\Exception $e) {
-                        \DB::rollback();
-                        Lock::release($redisLock);
-                        Clog::recordabnormal('用户代理扶持提现异常'.$e->getMessage());
-                        return $e->getMessage();
-                    }
-                }
-            }
-
-            if(!$existAmountIncrease){
-                return config('language')[$language]['error533'].$agentSupportWithdrawAmount.config('language')[$language]['error533'];
             }
         }
 
@@ -3551,7 +3440,6 @@ class Player extends Auth implements JWTSubject
         $withdrawalNeedSms             = CarrierCache::getCarrierMultipleConfigure($this->carrier_id, 'withdrawal_need_sms',$this->prefix);
         $enableSafeBox                 = CarrierCache::getCarrierMultipleConfigure($this->carrier_id, 'enable_safe_box',$this->prefix);
         $materialIds                   = CarrierCache::getCarrierMultipleConfigure($this->carrier_id, 'materialIds',$this->prefix);
-        $agentSupportWithdrawAmount    = CarrierCache::getCarrierMultipleConfigure($this->carrier_id, 'agent_support_withdraw_amount',$this->prefix);
         $enableVoucherRecharge         = CarrierCache::getCarrierMultipleConfigure($this->carrier_id, 'enable_voucher_recharge',$this->prefix);
         $voucherNeedRechargeAmount     = CarrierCache::getCarrierMultipleConfigure($this->carrier_id, 'voucher_need_recharge_amount',$this->prefix);
         $language                      = CarrierCache::getLanguageByPrefix($this->prefix);
@@ -3715,7 +3603,7 @@ class Player extends Auth implements JWTSubject
 
                                 \DB::commit();
                                 Lock::release($redisLock);
-                                return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
+                                return config('language')[$language]['error537'].config('language')[$language]['text71'];
                             }
                         }
                     } catch (\Exception $e) {
@@ -3764,113 +3652,6 @@ class Player extends Auth implements JWTSubject
             $existPlayerWithdraw = PlayerWithdraw::where('carrier_id',$this->carrier_id)->where('player_id',$this->player_id)->whereIn('status',[0,-1,4,5,6])->first();
             if($existPlayerWithdraw){
                 return config('language')[$language]['error532'];
-            }
-        }
-
-        //是否代理扶持且未充值
-        $existAgentSupport = PlayerTransfer::where('player_id',$this->player_id)->where('type','agent_support')->orderBy('id','desc')->first();
-        if($existAgentSupport){
-            $existAmountIncrease = PlayerTransfer::where('player_id',$this->player_id)->whereIn('type',['recharge','dividend_from_parent','commission_from_child'])->orderBy('id','desc')->first();
-            //提现金额少于代理扶持最低出款金额
-            if($agentSupportWithdrawAmount > $amount){
-                return config('language')[$language]['error535'].$agentSupportWithdrawAmount;
-            }
-
-            //扣除多余出来的金额
-            if(!$existAmountIncrease && $amount > $agentSupportWithdrawAmount){
-                $cacheKey              = "player_" .$this->player_id;
-                $redisLock             = Lock::addLock($cacheKey,60);
-                $diff                  = $amount - $agentSupportWithdrawAmount;
-
-                if (!$redisLock) {
-                    return config('language')[$language]['error20'];
-                } else {
-                    try {
-                        \DB::beginTransaction();
-
-                        $playerAccount                          = PlayerAccount::where('player_id',$this->player_id)->lockForUpdate()->first();
-                        if($enableSafeBox){
-                            if($playerAccount->agentbalance < $diff*10000){
-                                Lock::release($redisLock);
-                                return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
-                            } elseif($playerAccount->agentbalance - $diff*10000 < $agentSupportWithdrawAmount*10000){
-                                Lock::release($redisLock);
-                                return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
-                            }
-                        } else{
-                            if($playerAccount->balance < $diff*10000){
-                                Lock::release($redisLock);
-                                return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
-                            } elseif($playerAccount->balance - $diff*10000 < $agentSupportWithdrawAmount*10000){
-                                Lock::release($redisLock);
-                                return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
-                            }
-                        }
-
-                        $playerTransfer                         = new PlayerTransfer();
-                        $playerTransfer->prefix                 = $this->prefix;
-                        $playerTransfer->carrier_id             = $this->carrier_id;
-                        $playerTransfer->rid                    = $this->rid;
-                        $playerTransfer->top_id                 = $this->top_id;
-                        $playerTransfer->parent_id              = $this->parent_id;
-                        $playerTransfer->player_id              = $this->player_id;
-                        $playerTransfer->is_tester              = $this->is_tester;
-                        $playerTransfer->user_name              = $this->user_name;
-                        $playerTransfer->level                  = $this->level;
-                        $playerTransfer->mode                   = 2;
-                        $playerTransfer->type                   = 'gift_transfer_reduce';
-                        $playerTransfer->type_name              = config('language')[$language]['text59'];
-                        $playerTransfer->day_m                  = date('Ym');
-                        $playerTransfer->day                    = date('Ymd');
-                        $playerTransfer->amount                 = $diff*10000;
-                        $playerTransfer->admin_id               = 0;
-                        $playerTransfer->remark                 = config('language')[$language]['text70'];
-
-                        if($enableSafeBox){
-                            $playerTransfer->before_balance                  = $playerAccount->balance;
-                            $playerTransfer->balance                         = $playerAccount->balance;
-                            $playerTransfer->before_frozen_balance           = $playerAccount->frozen;
-                            $playerTransfer->frozen_balance                  = $playerAccount->frozen;
-                            $playerTransfer->before_agent_balance            = $playerAccount->agentbalance;
-                            $playerTransfer->agent_balance                   = $playerAccount->agentbalance - $playerTransfer->amount;
-                            $playerTransfer->before_agent_frozen_balance     = $playerAccount->agentfrozen;
-                            $playerTransfer->agent_frozen_balance            = $playerAccount->agentfrozen;
-
-                            $playerAccount->agentbalance                     = $playerTransfer->agent_balance;
-                            $playerAccount->agentfrozen                      = $playerTransfer->agent_frozen_balance;
-
-                        } else{
-                            $playerTransfer->before_balance                  = $playerAccount->balance;
-                            $playerTransfer->balance                         = $playerAccount->balance- $playerTransfer->amount;
-                            $playerTransfer->before_frozen_balance           = $playerAccount->frozen;
-                            $playerTransfer->frozen_balance                  = $playerAccount->frozen;
-                            $playerTransfer->before_agent_balance            = $playerAccount->agentbalance;
-                            $playerTransfer->agent_balance                   = $playerAccount->agentbalance;
-                            $playerTransfer->before_agent_frozen_balance     = $playerAccount->agentfrozen;
-                            $playerTransfer->agent_frozen_balance            = $playerAccount->agentfrozen;
-
-                            $playerAccount->balance                          = $playerTransfer->balance;
-                            $playerAccount->frozen                           = $playerTransfer->frozen_balance;
-                        }
-
-                        $playerTransfer->save();
-                        $playerAccount->save();
-
-                        \DB::commit();
-                        Lock::release($redisLock);
-
-                        return config('language')[$language]['error537'].$agentSupportWithdrawAmount.config('language')[$language]['text71'];
-                    } catch (\Exception $e) {
-                        \DB::rollback();
-                        Lock::release($redisLock);
-                        Clog::recordabnormal('用户代理扶持提现异常'.$e->getMessage());
-                        return $e->getMessage();
-                    }
-                }
-            }
-
-            if(!$existAmountIncrease){
-                return config('language')[$language]['error533'].$agentSupportWithdrawAmount.config('language')[$language]['error533'];
             }
         }
 

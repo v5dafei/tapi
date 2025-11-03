@@ -450,10 +450,6 @@ class SystemController extends BaseController
             CarrierMultipleFront::where('carrier_id',$this->carrier->id)->where('prefix',$input['prefix'])->where('sign','enable_voucher_recharge')->update(['value'=>$input['enable_voucher_recharge']]);
         }
 
-        if(isset($input['agent_support_withdraw_amount']) && is_numeric($input['agent_support_withdraw_amount']) && $input['agent_support_withdraw_amount']>100) {
-            CarrierMultipleFront::where('carrier_id',$this->carrier->id)->where('prefix',$input['prefix'])->where('sign','agent_support_withdraw_amount')->update(['value'=>$input['agent_support_withdraw_amount']]);
-        }
-
         if(isset($input['digital_rate']) && is_numeric($input['digital_rate']) && $input['digital_rate']>0) {
             CarrierMultipleFront::where('carrier_id',$this->carrier->id)->where('prefix',$input['prefix'])->where('sign','digital_rate')->update(['value'=>$input['digital_rate']]);
         }
@@ -2266,7 +2262,7 @@ class SystemController extends BaseController
 
         $data                 = [];
         $signarr1                 = ['casino_betflow_calculate_rate','electronic_betflow_calculate_rate','esport_betflow_calculate_rate','fish_betflow_calculate_rate','card_betflow_calculate_rate','lottery_betflow_calculate_rate','sport_betflow_calculate_rate','is_bet_flow_convert','agent_casino_betflow_calculate_rate','agent_electronic_betflow_calculate_rate','agent_esport_betflow_calculate_rate','agent_fish_betflow_calculate_rate','agent_card_betflow_calculate_rate','agent_lottery_betflow_calculate_rate','agent_sport_betflow_calculate_rate','enabel_agent_commissionflow_single'];
-        $signarr2                 = ['no_fake_pg_playerids','is_loss_write_betflow','enable_clean_loss','clean_loss_amount_cycle','clean_loss_amount','enable_fast_kill','enable_agent_game_limit','first_deposit_activity_plus','batch_register_ip_number','enable_batch_register_froze','ip_blacklist','fake_withdraw_player_ids','fake_withdraw_limit','forcibly_joinfakegame_activityid','materialIds','prefix_type','live_broadcast_awards','skip_abrbitrageurs_judge_channel','agent_support_withdraw_amount'];
+        $signarr2                 = ['no_fake_pg_playerids','is_loss_write_betflow','enable_clean_loss','clean_loss_amount_cycle','clean_loss_amount','enable_fast_kill','enable_agent_game_limit','first_deposit_activity_plus','batch_register_ip_number','enable_batch_register_froze','ip_blacklist','fake_withdraw_player_ids','fake_withdraw_limit','forcibly_joinfakegame_activityid','materialIds','prefix_type','live_broadcast_awards','skip_abrbitrageurs_judge_channel'];
         $signarr3                 = ['guaranteed_level_difference','limit_highest_guaranteed','dividend_level_difference','limit_highest_dividend','enabele_setting_dividends','enabele_setting_guaranteed','dividend_enumerate'];
         $signarr5                 = ['third_wallet','disable_withdraw_channel','finance_min_recharge','finance_max_recharge','in_r_out_u','in_t_out_u','digital_rate','withdraw_digital_rate','finance_min_withdraw','min_withdrawal_usdt','withdraw_ratefee','alipay_withdraw_ratefee'];
         $signarr6                 = ['enable_register_gift_code','voucher_money','voucher_betflow_multiple','voucher_valid_day','voucher_recharge_amount','enable_send_voucher','register_gift_code_amount','is_show_front_exchange','stop_exchange_rate','enable_coupons_bank_store','not_included_exchange_rate','voucher_withdraw_max_money','enable_voucher_recharge','voucher_need_recharge_amount','skip_abrbitrageurs_judge_channel','disable_voucher_channel','disable_voucher_team_channel'];
@@ -3317,10 +3313,6 @@ class SystemController extends BaseController
         $playerIdsArr             = array_diff($playerIdsArr,$rechargePlayerIdsArr);
 
         foreach ($playerIdsArr as $key => $value) {
-            $existPlayerTransfer = PlayerTransfer::where('player_id',$value)->where('type','agent_support')->first();
-            if($existPlayerTransfer){
-                continue;
-            }
 
             //未绑银行卡与未绑支付宝不发放
             $existPlayerBankCard = PlayerBankCard::where('player_id',$value)->first();

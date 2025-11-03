@@ -448,14 +448,6 @@ class PlayerController extends BaseController
             return $this->returnApiJson("对不起，独立后台不能使用游戏补分", 0);
         }
 
-        if(isset($input['type']) && $input['type'] == 'agent_support'){
-            $existPlayerBankCard = PlayerBankCard::where('player_id',$playerId)->first();
-            $existPlayerAlipay   = PlayerAlipay::where('player_id',$playerId)->first();
-            if(!$existPlayerBankCard && !$existPlayerAlipay){
-                return $this->returnApiJson("对不起，代理扶持必须先绑定银行卡或支付宝", 0);
-            }
-        }
-
         $res = $player->addreduce($this->carrierUser->id);
         if($res === true) {
             return $this->returnApiJson("操作成功", 1);

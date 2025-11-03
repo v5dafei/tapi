@@ -984,17 +984,6 @@ class CarrierPreFixDomainObserver
         $rows                     = [];
         $rows['carrier_id']       = $carrierPreFixDomain->carrier_id;
         $rows['prefix']           = $carrierPreFixDomain->prefix;
-        $rows['sign']             = 'agent_support_withdraw_amount';
-        $rows['value']            = 200;
-        $rows['type']             = 0;
-        $rows['remark']           = '代理扶持提现金额';
-        $rows['created_at']       = date('Y-m-d H:i:s');
-        $rows['updated_at']       = date('Y-m-d H:i:s');
-        $insertData[]             = $rows;
-
-        $rows                     = [];
-        $rows['carrier_id']       = $carrierPreFixDomain->carrier_id;
-        $rows['prefix']           = $carrierPreFixDomain->prefix;
         $rows['sign']             = 'no_fake_pg_playerids';
         $rows['value']            = '';
         $rows['type']             = 0;

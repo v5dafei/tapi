@@ -1027,21 +1027,6 @@ class SysTableSeeder extends Seeder
         ]);
 
         DB::table('def_account_change_type')->insert([
-            'sign'                   => 'buy_video_card_level',
-            'name'                   => '购买视频会员',
-            'type'                   => 2,
-            'amount'                 => 1,
-            'user_id'                => 1,
-            'platform_id'            => 0,
-            'from_id'                => 0,
-            'to_id'                  => 0,
-            'activity_id'            => 0,
-            'admin_id'               => 1,
-            'created_at'             => date('Y-m-d H:i:s'),
-            'updated_at'             => date('Y-m-d H:i:s'),
-        ]);
-
-        DB::table('def_account_change_type')->insert([
             'sign'                   => 'safe_transfer_reduce',
             'name'                   => '保险箱扣减',
             'type'                   => 2,
@@ -1074,21 +1059,6 @@ class SysTableSeeder extends Seeder
         DB::table('def_account_change_type')->insert([
             'sign'                   => 'reimbursement_gift',
             'name'                   => '报销礼金',
-            'type'                   => 1,
-            'amount'                 => 1,
-            'user_id'                => 1,
-            'platform_id'            => 0,
-            'from_id'                => 0,
-            'to_id'                  => 0,
-            'activity_id'            => 0,
-            'admin_id'               => 0,
-            'created_at'             => date('Y-m-d H:i:s'),
-            'updated_at'             => date('Y-m-d H:i:s')
-        ]);
-
-        DB::table('def_account_change_type')->insert([
-            'sign'                   => 'agent_support',
-            'name'                   => '代理扶持',
             'type'                   => 1,
             'amount'                 => 1,
             'user_id'                => 1,
