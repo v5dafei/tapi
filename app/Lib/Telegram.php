@@ -28,6 +28,8 @@ class Telegram {
         $output = self::request('POST',$url,$params);
         $output = json_decode($output,true);
 
+        \Log::info('小飞机发消息的返回值是',$output);
+
         if(isset($output) && $output['ok']) {
             return true;
         } else {
