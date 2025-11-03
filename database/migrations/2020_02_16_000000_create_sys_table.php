@@ -92,39 +92,41 @@ class CreateSysTable extends Migration
             $table->increments('main_game_plat_id');
             $table->string('main_game_plat_code',32)->comment("主平台代码");
             $table->tinyInteger('status')->default(1)->comment("1 正常  0 关闭,2 维护");
-            $table->tinyInteger('changeLine')->default(0)->comment("0 正常状态 1 换线中  2 换线完成");
+            $table->tinyInteger('is_real_game')->comment("是否真游戏");
+            $table->string('fake_game_code',32)->comment("假游戏平台代码");
             $table->integer('sort')->default(0)->comment("排序");
-            $table->string('alias')->comment("名称");
-            $table->string('en_alias')->comment("英文名称");
-            $table->string('short')->default('')->comment("简称");
             $table->timestamps();
         });
 
-        // 商户游戏平台列表
+         // 商户游戏平台列表
         Schema::create('def_games', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('main_game_plat_id')->comment("主平台ID");
-            $table->integer('game_category')->comment("1=真人，2＝电子，3＝电竞，4＝棋牌，5＝体育，6＝彩票 7=捕鱼");
-            $table->string('game_id',32)->default('')->comment("游戏ID");
+            $table->integer('main_game_plat_id');
+            $table->string('game_id',32)->default('')->comment("游戏编码");
+            $table->integer('game_category')->comment("1=真人，2＝电子，3＝电竞，4＝棋牌，5＝体育，6＝彩票 7=捕鱼,8=小游戏");
             $table->string('main_game_plat_code',32)->comment("主平台代码");
-            $table->string('game_name',32)->default('')->comment("中文名称");
             $table->string('en_game_name',32)->default('')->comment("英文名称");
-            $table->string('game_code',32)->default('')->comment("PC编码");
+            $table->string('vi_game_name',32)->default('')->comment("越南语名称");
+            $table->string('pt_game_name',32)->default('')->comment("萄葡牙语名称");
+            $table->string('es_game_name',32)->default('')->comment("西班牙语名称");
+            $table->string('game_code')->default('')->comment("PC编码");
             $table->string('game_moblie_code',32)->default('')->comment("移动编码");
-            $table->tinyInteger('format')->default(0)->comment("0=不限，1=直式，2=横式");
-            $table->string('game_icon_square_path',64)->default('')->comment("200*200中文图片");
-            $table->string('en_game_icon_square_path',64)->default('')->comment("200*200英文图片");
+            $table->string('en_game_icon_square_path',64)->default('')->comment("英文正方型图片路径");
+            $table->string('vi_game_icon_square_path',64)->default('')->comment("越南文正方型图片路径");
+            $table->string('pt_game_icon_square_path',64)->default('')->comment("萄葡牙正方型图片路径");
+            $table->string('es_game_icon_square_path',64)->default('')->comment("西班牙正方型图片路径");
+            $table->string('en_game_icon_rectangle_path',64)->default('')->comment("英文长方型图片路径");
+            $table->string('vi_game_icon_rectangle_path',64)->default('')->comment("越南文长方型图片路径");
+            $table->string('pt_game_icon_rectangle_path',64)->default('')->comment("萄葡牙长方型图片路径");
+            $table->string('es_game_icon_rectangle_path',64)->default('')->comment("西班牙长方型图片路径");
             $table->tinyInteger('zh_status')->default(1)->comment("是否支持简体中文 1=是,0=否");
             $table->tinyInteger('en_status')->default(1)->comment("是否支持英语  1=是,0=否");
-            $table->tinyInteger('status')->default(1)->comment("1 正常  0 关闭 2维护");
-            $table->tinyInteger('is_offline')->default(0)->comment("是否下架 1 是  0 否");
-            $table->integer('pageview')->default(0)->comment("人气");
-            $table->tinyInteger('is_recommend')->default(0)->comment("推荐 1 是  0 否");
-            $table->tinyInteger('is_hot')->default(0)->comment("热门 1 是  0 否");
-            $table->tinyInteger('is_pool')->default(0)->comment("奖期 1 是  0 否");
-            $table->tinyInteger('multi_spin_game')->default(0)->comment("1=是多旋转游戏  0=否");
-            $table->integer('sort')->default(1)->comment("排序");
+            $table->tinyInteger('vi_status')->default(1)->comment("是否支持越南语  1=是,0=否");
+            $table->tinyInteger('pt_status')->default(1)->comment("是否支持萄葡牙语  1=是,0=否");
+            $table->tinyInteger('es_status')->default(1)->comment("是否支持西班牙语  1=是,0=否");
+            $table->string('venue_code')->default('')->comment("游戏场馆代码");
             $table->string('record_match_code',32)->comment("配对");
+            $table->integer('sort')->default(1);
             $table->timestamps();
 
             $table->index("game_id");
