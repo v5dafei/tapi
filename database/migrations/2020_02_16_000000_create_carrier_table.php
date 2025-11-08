@@ -173,10 +173,8 @@ class CreateCarrierTable extends Migration
             $table->integer('team_id')->comment("团队ID");
             $table->string('username',32)->comment("帐号");
             $table->string('password',128)->comment("密码");
-            $table->string('nick_name',20)->comment("管理昵称");
             $table->rememberToken();
             $table->timestamp('login_at')->nullable()->comment("登录时间");
-            $table->timestamp('deleted_at')->nullable()->comment("删除时间");
             $table->tinyInteger('status')->default(1)->comment("是否正常 1=是，0=否");
             $table->tinyInteger('is_super_admin')->default(0)->comment("是否超管 1=是，0=否");
             $table->string('google_img',255)->default('')->commit("");

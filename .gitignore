@@ -1,0 +1,5 @@
+/.idea
+/customise/Logs
+/.env
+**/video/*.m3u8
+**/video/enc.key
