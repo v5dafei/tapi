@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Redis as Redis;
 
 class AuthController extends BaseController
 {
+    public function __construct () 
+    {
+        \Log::info('进入基本层3333333333');
+
+    }
     // 登录
     public function login()
     {
