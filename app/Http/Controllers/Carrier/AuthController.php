@@ -14,7 +14,7 @@ class AuthController extends BaseController
     // 登录
     public function login()
     {
-        \login::info('进入登录');
+        \log::info('进入登录');
         $input            = request()->all();
 
         if (!isset($input['username']) || empty($input['username'])) {
