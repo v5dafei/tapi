@@ -36,9 +36,13 @@ return [
     */
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
+        'carrier' => [
+            'driver' => 'jwt',
+            'provider' => 'carrier_user',
+        ],
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'user',
         ],
     ],
 
@@ -60,15 +64,14 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'carrier_user' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => \App\Models\CarrierUser::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'user'   => [
+            'driver' => 'eloquent',
+            'model' => \App\Models\Player::class,
+        ],
     ],
 
     /*
@@ -87,12 +90,6 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
-            'table' => 'password_resets',
-            'expire' => 60,
-            'throttle' => 60,
-        ],
     ],
 
     /*
