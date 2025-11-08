@@ -444,10 +444,6 @@ class PlayerController extends BaseController
             return $this->returnApiJson("对不起，非独立后台不能使用保险箱上分", 0);
         }
 
-        if($agentSingleBackground && isset($input['type']) && $input['type'] == 'game_score_add' && $player->win_lose_agent==1){
-            return $this->returnApiJson("对不起，独立后台不能使用游戏补分", 0);
-        }
-
         if(isset($input['type']) && $input['type'] == 'agent_support'){
             $existPlayerBankCard = PlayerBankCard::where('player_id',$playerId)->first();
             $existPlayerAlipay   = PlayerAlipay::where('player_id',$playerId)->first();

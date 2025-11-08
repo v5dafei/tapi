@@ -980,8 +980,6 @@ class Player extends Auth implements JWTSubject
             \DB::beginTransaction();
             $playerAccount = PlayerAccount::where('player_id',$playerAccount->player_id)->lockForUpdate()->first();
             switch ($input['type']) {
-                //游戏补分
-                case 'game_score_add':
                 //真人礼金
                 case 'casino_gift':
                 //电子礼金

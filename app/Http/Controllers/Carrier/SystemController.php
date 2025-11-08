@@ -91,7 +91,6 @@ class SystemController extends BaseController
         $input = request()->all();
         $data  = config('main')['addReduceList'];
         $data['add']['agent_reimbursement'] = '代理报销 (计入充值)';
-        $data['add']['game_score_add'] = '游戏补分 (不计入库存)';
         $data['add']['reimbursement_gift'] = '报销礼金 (不计入充值)';
         return returnApiJson('操作成功', 1, $data);
     }
