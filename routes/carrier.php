@@ -17,5 +17,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::group(['namespace' => "Carrier"], function () {
-    Route::post('login',                                                'AuthController@login')->name('carrier/login');
+    Route::post('login', [AuthController::class,'login']);
 });
