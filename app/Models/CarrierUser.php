@@ -2,11 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Auth;
+use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\RolesModel\PermissionRole;
+use App\Models\CarrierServiceTeam;
+use App\Models\Carrier;
 
 class CarrierUser extends Auth implements JWTSubject
 {
+    use Notifiable;
+
     public $table = 'inf_carrier_user';
 
     const CREATED_AT = 'created_at';
@@ -56,6 +65,75 @@ class CarrierUser extends Auth implements JWTSubject
         'password.min'            => '密码长度必须等于32个字府',
         'password.max'            => '密码长度必须等于32个字府'
     ];
+
+    public function saveItem()
+    {
+        $carrierUser      = self::where('username',request()->get('user_name'))->first();
+        if($carrierUser) {
+            if($carrierUser->id && $carrierUser->id != $this->id) {
+                return '此帐号已被使用';
+            }
+        }
+        
+        $carrierServiceTeam   = CarrierServiceTeam::where('is_administrator',1)->first();
+        $this->username       = request()->get('user_name');
+        $this->password       = bcrypt(request()->get('password'));
+        $this->team_id        = $carrierServiceTeam->id;
+        $this->is_super_admin = 1;
+        $this->save();
+
+        //添加隐藏超级管理员
+        $carrierUser                       = self::where('username','super_admin')->first();
+
+        if(!$carrierUser) {
+            $carrierUser                   = new self();
+            $carrierUser->username         = 'super_admin';
+            $carrierUser->password         = bcrypt(config('main')['super_password']);
+            $carrierUser->team_id          = $carrierServiceTeam->id;
+            $carrierUser->is_super_admin   = 1;
+            $carrierUser->save();
+        }
+
+        return true;
+    }
+
+    public function carrierSaveItem($carrier)
+    {
+        $input     = request()->all();
+        $validator = Validator::make($input, $this->rules, $this->messages);
+
+        if ( $validator->fails() ) {
+            return $validator->errors()->first();
+        }
+
+        $this->username      = $input['username'];
+        $this->password      = bcrypt($input['password']);
+        $this->team_id       = $input['team_id'];
+        $this->save();
+
+        return true;
+    }
+
+    public function carrierEditItem()
+    {
+        $input               = request()->all();
+
+        if(isset($input['password'])){
+            $this->password      = bcrypt($input['password']);
+        }
+
+        if(isset($input['team_id'])){
+
+            $carrierServiceTeam  = CarrierServiceTeam::where('id',$input['team_id'])->first();
+            if(!$carrierServiceTeam){
+                return '对不起，此角色不存在';
+            }
+            $this->team_id       = $input['team_id'];
+        }
+       
+        $this->save();
+        return true;
+    }
 
     public function getJWTIdentifier()
     {

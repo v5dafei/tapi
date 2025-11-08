@@ -3,15 +3,27 @@
 namespace App\Http\Controllers\Carrier;
 
 use App\Http\Controllers\Carrier\BaseController;
+use App\Models\Log\AdminSession;
+use Illuminate\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Conf\SysTelegramChannel;
+use App\Models\Conf\CarrierWebSite;
+use App\Lib\Cache\CarrierCache;
+use App\Models\CarrierUser;
+use App\Models\Carrier;
+use App\Jobs\TelegramJob;
+use App\Models\RolesModel\Permission;
+use App\Models\RolesModel\PermissionServiceTeam;
 use Illuminate\Support\Facades\Redis as Redis;
+use App\Utils\Client\IP;
 
 class AuthController extends BaseController
 {
+    use Authenticatable;
+
     // 登录
     public function login()
     {
-        \Log::info('进入登录');
         $input            = request()->all();
 
         if (!isset($input['username']) || empty($input['username'])) {

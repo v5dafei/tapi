@@ -15,20 +15,19 @@ return [
     */
 
     'mailgun' => [
-        'domain' => env('MAILGUN_DOMAIN'),
-        'secret' => env('MAILGUN_SECRET'),
-        'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
-        'scheme' => 'https',
+        'domain' =>  \Yaconf::get(YACONF_PRO_ENV.'.MAILGUN_DOMAIN'),
+        'secret' =>  \Yaconf::get(YACONF_PRO_ENV.'.MAILGUN_SECRET'),
+        'endpoint' =>  \Yaconf::get(YACONF_PRO_ENV.'.MAILGUN_ENDPOINT', 'api.mailgun.net'),
     ],
 
     'postmark' => [
-        'token' => env('POSTMARK_TOKEN'),
+        'token' =>  \Yaconf::get(YACONF_PRO_ENV.'.POSTMARK_TOKEN'),
     ],
 
     'ses' => [
-        'key' => env('AWS_ACCESS_KEY_ID'),
-        'secret' => env('AWS_SECRET_ACCESS_KEY'),
-        'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+        'key' =>  \Yaconf::get(YACONF_PRO_ENV.'.AWS_ACCESS_KEY_ID'),
+        'secret' =>  \Yaconf::get(YACONF_PRO_ENV.'.AWS_SECRET_ACCESS_KEY'),
+        'region' =>  \Yaconf::get(YACONF_PRO_ENV.'.AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
 ];

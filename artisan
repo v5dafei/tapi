@@ -2,6 +2,12 @@
 <?php
 
 define('LARAVEL_START', microtime(true));
+defined('ROOT_PATH') or define('ROOT_PATH',__DIR__);
+
+//define('APP_PATH',ROOT_PATH . '/app');
+//define('LIB_PATH',APP_PATH. '/Lib');
+# 高精度计算：小数点默认保留位数
+bcscale(4);
 
 /*
 |--------------------------------------------------------------------------
@@ -11,7 +17,7 @@ define('LARAVEL_START', microtime(true));
 | Composer provides a convenient, automatically generated class loader
 | for our application. We just need to utilize it! We'll require it
 | into the script here so that we do not have to worry about the
-| loading of any of our classes manually. It's great to relax.
+| loading of any our classes "manually". Feels great to relax.
 |
 */
 

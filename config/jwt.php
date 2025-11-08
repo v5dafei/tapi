@@ -25,7 +25,7 @@ return [
     |
     */
 
-    'secret' => env('JWT_SECRET'),
+    'secret' =>  \Yaconf::get(YACONF_PRO_ENV.'.JWT_SECRET'),
 
     /*
     |--------------------------------------------------------------------------
@@ -57,7 +57,7 @@ return [
         |
         */
 
-        'public' => env('JWT_PUBLIC_KEY'),
+        'public' =>  \Yaconf::get(YACONF_PRO_ENV.'.JWT_PUBLIC_KEY'),
 
         /*
         |--------------------------------------------------------------------------
@@ -70,7 +70,7 @@ return [
         |
         */
 
-        'private' => env('JWT_PRIVATE_KEY'),
+        'private' =>  \Yaconf::get(YACONF_PRO_ENV.'.JWT_PRIVATE_KEY'),
 
         /*
         |--------------------------------------------------------------------------
@@ -81,7 +81,7 @@ return [
         |
         */
 
-        'passphrase' => env('JWT_PASSPHRASE'),
+        'passphrase' =>  \Yaconf::get(YACONF_PRO_ENV.'.JWT_PASSPHRASE'),
 
     ],
 
@@ -101,7 +101,7 @@ return [
     |
     */
 
-    'ttl' => env('JWT_TTL', 60),
+    'ttl' =>  \Yaconf::get(YACONF_PRO_ENV.'.JWT_TTL', 10080),
 
     /*
     |--------------------------------------------------------------------------
@@ -120,7 +120,7 @@ return [
     |
     */
 
-    'refresh_ttl' => env('JWT_REFRESH_TTL', 20160),
+    'refresh_ttl' =>  \Yaconf::get(YACONF_PRO_ENV.'.JWT_REFRESH_TTL', 20160),
 
     /*
     |--------------------------------------------------------------------------
@@ -129,9 +129,12 @@ return [
     |
     | Specify the hashing algorithm that will be used to sign the token.
     |
+    | See here: https://github.com/namshi/jose/tree/master/src/Namshi/JOSE/Signer/OpenSSL
+    | for possible values.
+    |
     */
 
-    'algo' => env('JWT_ALGO', Tymon\JWTAuth\Providers\JWT\Provider::ALGO_HS256),
+    'algo' =>  \Yaconf::get(YACONF_PRO_ENV.'.JWT_ALGO', 'HS256'),
 
     /*
     |--------------------------------------------------------------------------
@@ -205,7 +208,7 @@ return [
     |
     */
 
-    'leeway' => env('JWT_LEEWAY', 0),
+    'leeway' =>  \Yaconf::get(YACONF_PRO_ENV.'.JWT_LEEWAY', 0),
 
     /*
     |--------------------------------------------------------------------------
@@ -217,7 +220,7 @@ return [
     |
     */
 
-    'blacklist_enabled' => env('JWT_BLACKLIST_ENABLED', true),
+    'blacklist_enabled' =>  \Yaconf::get(YACONF_PRO_ENV.'.JWT_BLACKLIST_ENABLED', true),
 
     /*
     | -------------------------------------------------------------------------
@@ -232,7 +235,7 @@ return [
     |
     */
 
-    'blacklist_grace_period' => env('JWT_BLACKLIST_GRACE_PERIOD', 0),
+    'blacklist_grace_period' =>  \Yaconf::get(YACONF_PRO_ENV.'.JWT_BLACKLIST_GRACE_PERIOD', 0),
 
     /*
     |--------------------------------------------------------------------------

@@ -1,0 +1,27 @@
+<?php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use App\Models\Log\Carrier;
+use Illuminate\Support\Facades\DB;
+
+class GamePlatLanguage extends Model
+{
+   
+    public $table = 'map_game_plat_language';
+
+    const CREATED_AT = 'created_at';
+
+    const UPDATED_AT = 'updated_at';
+
+    public $fillable = [
+    
+    ];
+
+    protected $casts = [
+       
+    ];
+
+    public static $rules = [];
+}

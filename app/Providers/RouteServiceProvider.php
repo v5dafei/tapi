@@ -2,57 +2,54 @@
 
 namespace App\Providers;
 
-use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    /**
-     * The path to the "home" route for your application.
-     *
-     * Typically, users are redirected here after authentication.
-     *
-     * @var string
-     */
     protected $namespace = 'App\Http\Controllers';
-
     public const HOME = '/home';
-
-    /**
-     * Define your route model bindings, pattern filters, and other route configuration.
-     *
-     * @return void
-     */
     public function boot()
     {
-        $this->configureRateLimiting();
-
-        $this->routes(function () {
-
-            Route::middleware('web')
-                ->prefix('api')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/web.php'));
-
-            Route::middleware('carrier')
-                ->prefix('carrier')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/carrier.php'));
-        });
+        parent::boot();
+    }
+    public function map()
+    {
+        $this->mapCarrierRoutes();
+        $this->mapAdminRoutes();
+        $this->mapWebRoutes();
+        $this->mapAgentRoutes();
     }
 
-    /**
-     * Configure the rate limiters for the application.
-     *
-     * @return void
-     */
-    protected function configureRateLimiting()
+    protected function mapCarrierRoutes()
     {
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
+        Route::prefix('carrier')
+             ->middleware('carrier')
+             ->namespace($this->namespace)
+             ->group(base_path('routes/carrier.php'));
+    }
+
+    protected function mapAdminRoutes()
+    {
+        Route::prefix('admin')
+             ->middleware('admin')
+             ->namespace($this->namespace)
+             ->group(base_path('routes/admin.php'));
+    }
+
+    protected function mapWebRoutes()
+    {
+        Route::prefix('api')
+             ->middleware('web')
+             ->namespace($this->namespace)
+             ->group(base_path('routes/web.php'));
+    }
+
+    protected function mapAgentRoutes()
+    {
+        Route::prefix('agent')
+             ->middleware('agent')
+             ->namespace($this->namespace)
+             ->group(base_path('routes/agent.php'));
     }
 }
