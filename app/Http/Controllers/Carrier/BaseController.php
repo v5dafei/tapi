@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Carrier;
 
 use App\Http\Controllers\Controller;
-use App\Models\Carrier;
 
 class BaseController extends Controller
 {
