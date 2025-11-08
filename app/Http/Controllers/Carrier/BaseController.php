@@ -16,7 +16,7 @@ class BaseController extends Controller
             $this->authToken = explode(' ', $tokenHeader)[1];
         }
 
-        //$this->carrierUser = auth("carrier")->user();
+        $this->carrierUser = auth("carrier")->user();
 
     }
 }
