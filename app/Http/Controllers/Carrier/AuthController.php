@@ -3,14 +3,11 @@
 namespace App\Http\Controllers\Carrier;
 
 use App\Http\Controllers\Carrier\BaseController;
-use Illuminate\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis as Redis;
 
 class AuthController extends BaseController
 {
-    use Authenticatable;
-
     // 登录
     public function login()
     {
