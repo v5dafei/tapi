@@ -13,7 +13,6 @@ class CreateTaskTable extends Migration
         Schema::create('inf_task_setting', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('carrier_id');
-            $table->string('prefix',4)->default('A')->commit("用户前端前辍");
             $table->integer('game_category')->default(0)->comment("类型 1=真人，2＝电子，3＝电竞，4＝棋牌，5＝体育，6＝彩票 7=捕鱼");
             $table->integer('amount')->default(0)->comment('奖励金额');
             $table->integer('available_bet_amount')->comment('有效投注');
