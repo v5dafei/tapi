@@ -17,7 +17,7 @@ class BaseController extends Controller
         if(!empty($tokenHeader) && strpos($tokenHeader,'bearer')!==false) {
             $this->authToken = explode(' ', $tokenHeader)[1];
         }
-
+        \Log::info('进入基本层222');
         //$this->carrierUser = auth("carrier")->user();
 
     }
