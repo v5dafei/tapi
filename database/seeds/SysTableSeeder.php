@@ -27,21 +27,21 @@ class SysTableSeeder extends Seeder
             'updated_at'             => date('Y-m-d H:i:s'),
         ]);
         DB::table('def_language')->insert([
-            'id'                     => 2,
+            'id'                     => 3,
             'name'                   => 'pt',
             'zh_name'                => '萄葡牙语',
             'created_at'             => date('Y-m-d H:i:s'),
             'updated_at'             => date('Y-m-d H:i:s'),
         ]);
         DB::table('def_language')->insert([
-            'id'                     => 3,
+            'id'                     => 4,
             'name'                   => 'es',
             'zh_name'                => '西班牙语',
             'created_at'             => date('Y-m-d H:i:s'),
             'updated_at'             => date('Y-m-d H:i:s'),
         ]);
         DB::table('def_language')->insert([
-            'id'                     => 4,
+            'id'                     => 5,
             'name'                   => 'vi',
             'zh_name'                => '越南语',
             'created_at'             => date('Y-m-d H:i:s'),
